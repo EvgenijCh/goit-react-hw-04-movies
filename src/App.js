@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { lazy, Suspense } from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from "./components/Loader/Loader";
+import Container from "./components/Container";
+import Navigation from "./components/Navigation/Navigation";
+import styles from "./App.module.css";
 
-function App() {
+const HomePage = lazy(() =>
+  import("./components/HomePage/HomePage"),
+);
+const MoviesPage = lazy(() =>
+  import(
+    "./components/MoviesPage/MoviesPage" ),
+);
+const MovieDetailsPage = lazy(() =>
+  import(
+    "./components/MovieDetailsPage/MovieDetailsPage"),
+);
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <Container>
+      <header className={styles.header}>
+        <Navigation />
       </header>
-    </div>
+
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <Route path="/" exact>
+            <HomePage />
+          </Route>
+
+          <Route path="/movies/:movieId">
+            <MovieDetailsPage />
+          </Route>
+
+          <Route path="/movies">
+            <MoviesPage />
+          </Route>
+
+          <Redirect to="/" />
+        </Switch>
+      </Suspense>
+
+      <ToastContainer autoClose={3000} />
+    </Container>
   );
 }
 
-export default App;
+
